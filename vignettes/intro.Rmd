@@ -63,6 +63,11 @@ The final line of code defines how sexes are determined in the simulation. Sex w
 SP$setSexes("yes_sys")
 ```
 
+```{r eval=FALSE}
+SP$setTrackRec(True)
+```
+Setting `True` enables tracking of recombination events during the simulation.
+
 ## Modeling the Breeding Program
 
 We are now ready to start modeling the breeding program. To begin, we need to generate the initial population of animals. This step will take the haplotypes in `founderPop` and the information in `SP` to create an object of `Pop-class`. 
@@ -101,6 +106,18 @@ The last step to a simulation is examining the results. In this example there is
 plot(0:20, genMean, xlab="Generation", ylab="Mean Genetic Value", type="l")
 ```
 
+## Tracking Recombiniaiton histories
+
+```{r eval=FALSE}
+SP$recHist
+```
+
+The `SP$recHist` tracks all recombinaitons across all individuals that have been created in the simulation. Basically, this object is structured by individuals, chromosomes, and their copies. If individual 1 is a founder, `SP$recHist[[1]]` is a vector of two interger. For non-founder indiciduals, `SP$recHist[[5]]` is a list that contains the recombinaition information for each chromosome of individual 5.  `SP$recHist[[5]][[1]]` list the chromosome copies of first chromosome of individual 5. For diploid individuals, each chromosome is represented by two copies: The first copy is inherited from the monther; The second copy is inherited from the father. 
+
+Detailed Recombination Information
+For the chromosome copy from mother, `SP$recHist[[5]][[1]][[1]]` includes a matrix with two columns: The first column indicates the origin of chromosome segments. A value of `1` means that the segment origianted from maternal chromosome, while a value of `2` means that it is from paternal chromosome. The second column specifies the START positions of the chromosome segments. Also, it is the points where recombination events have occured.
+ 
+
 
 ## Full Code
 
@@ -121,6 +138,7 @@ SP$nThreads = 1L
 ```{r}
 SP$addTraitA(nQtlPerChr=1000)
 SP$setSexes("yes_sys")
+SP$setTrackRec(True)
 
 # Modeling the Breeding Program
 pop = newPop(founderPop)
@@ -132,6 +150,9 @@ for(generation in 1:20){
 
 # Examining the Results
 plot(0:20, genMean, xlab="Generation", ylab="Mean Genetic Value", type="l")
+
+# Tracking Recombiniaiton histories
+SP$recHist
 ```
 
 # References
